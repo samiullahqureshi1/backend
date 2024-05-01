@@ -12,7 +12,7 @@ router.post('/',async(req,res)=>{
        password:bcrypt.hashSync(req.body.password, saltRound)
     })
     await data.save()
-        res.status(201).send(data)
+       
 
     jwt.sign({data},secretkey,{expiresIn:'300s'},(err,token)=>{
         res.json({
