@@ -18,6 +18,6 @@ mongoose
     app.use(express.json())
     app.use('/logins',routers_login)
 
-app.listen(4000,()=>{
+app.listen(6000,()=>{
     console.log('server properly connected')
 })
