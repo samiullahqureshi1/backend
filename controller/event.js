@@ -25,11 +25,12 @@ const getEvent=(req,res)=>{
     }).catch(err=>{
         res.status(404).send('no event exist')
     })
+    
 };
 
 const getSingleEvent=(req,res)=>{
-    const {eid}=req.params;
-    eventModel.findOne({_id:eid}).then(result=>{
+    const {id}=req.params;
+    eventModel.findOne({_id:id}).then(result=>{
         if(!result){
             return res.status(404).send('event not found')
         }
@@ -65,4 +66,13 @@ const deleteEvent=(req,res)=>{
     })
 }
 
-export default {addEvent,getEvent,getSingleEvent,editEvent,deleteEvent};
+const getFiltration=(req,res)=>{
+    const {name}=req.query;
+    eventModel.find({name:name}).then(result=>{
+        if(!result){
+            return res.status(404).send('event not found')
+        }
+        return res.status(201).send(result)
+    })
+}
+export default {addEvent,getEvent,getSingleEvent,editEvent,deleteEvent,getFiltration};

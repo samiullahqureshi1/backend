@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const eventSchema=new mongoose.Schema(
     {
         name:String,
-        time:Number,
+        date:Number,
     }
 )
 

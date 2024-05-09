@@ -4,7 +4,8 @@ const EventRouter=express.Router();
 
 EventRouter.post('/add',event.addEvent)
 EventRouter.get('/find',event.getEvent)
-EventRouter.get('/:eid',event.getSingleEvent)
+EventRouter.get('/:id',event.getSingleEvent)
 EventRouter.put('/update/:id',event.editEvent)
 EventRouter.delete('/delete/:id',event.deleteEvent)
+EventRouter.get('/',event.getFiltration)
 export default EventRouter;
