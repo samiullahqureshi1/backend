@@ -1,4 +1,4 @@
-import { userModel } from "../model/userSchema.js";
+    import { userModel } from "../model/userSchema.js";
 import bcrypt from 'bcrypt'
 
 
@@ -21,7 +21,8 @@ const signUp=async(req,res)=>{
             User.save();
         })
     }
-       
-   })
+})
 }
+
+
 export default signUp;

@@ -9,6 +9,7 @@ dbConnection();
     app.use(express.json());
     app.use('/users',authRouter.SignUp)
     app.use('/SignIn',authRouter.signin)
+    app.use('/events',authRouter.newEvent)
 app.listen(5000,()=>{
     console.log('server properly connected')
 })
