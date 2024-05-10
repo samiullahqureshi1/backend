@@ -67,8 +67,23 @@ const deleteEvent=(req,res)=>{
 }
 
 const getFiltration=(req,res)=>{
-    const {name}=req.query;
-    eventModel.find({name:name}).then(result=>{
+    const {month,day,year}=req.query;
+    console.log(month,day,year)
+    const date=`${year}-${month}-${day}`
+    console.log(date)
+    var timeStamp= new Date(date);
+    console.log(timeStamp)
+    const dayEnd=timeStamp
+    // Add hours (for example, add 2 hours)
+dayEnd.setHours(dayEnd.getHours() + 23);
+
+// Add minutes (for example, add 30 minutes)
+dayEnd.setMinutes(dayEnd.getMinutes() + 59);
+
+    eventModel.find({createdAt:{
+        $gte:date,
+        $lt:dayEnd,
+    }}).then(result=>{
         if(!result){
             return res.status(404).send('event not found')
         }
