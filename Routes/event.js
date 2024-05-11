@@ -7,5 +7,6 @@ EventRouter.get('/find',event.getEvent)
 EventRouter.get('/:id',event.getSingleEvent)
 EventRouter.put('/update/:id',event.editEvent)
 EventRouter.delete('/delete/:id',event.deleteEvent)
-EventRouter.get('/',event.getFiltration)
+EventRouter.get('/ss',event.getFiltration)
+EventRouter.get('/',event.getFilter)
 export default EventRouter;
