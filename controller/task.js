@@ -1,15 +1,19 @@
 import { taskModel } from "../model/task.js";
-import OpenAI from "openai";
+
 
 const addTask=(req,res)=>{
-    const {userId,title,description,dueDate,priority,completed}=req.body
+    const {userId,title,description,dueDate,priority,completed,lastAccessed,timesAccessed,completionTime,frequency}=req.body
     const newData=new taskModel({
         userId,
         title,
         description,
         dueDate,
         priority,
-        completed
+        completed,
+        lastAccessed,
+        timesAccessed,
+        completionTime,
+        frequency,
     })
     newData.save().then(result=>{
         if(result){
@@ -55,82 +59,151 @@ const deleteTask=(req,res)=>{
     })
 }
 ///suggetion on user behaviour
-const openai=new OpenAI({
-    apiKey:'api key'
-})
-const cache = new Map();
+// --- Logistic Regression Implementation ---
 
-// Cache TTL in milliseconds (e.g., 1 hour)
-const CACHE_TTL = 3600000;
-const getSugestion=async(req,res)=>{
-    const { id } = req.params;
+class CollaborativeFiltering {
+    constructor(userTaskMatrix) {
+        this.userTaskMatrix = userTaskMatrix;
+        this.similarityMatrix = this.calculateSimilarityMatrix();
+    }
 
-    try {
-        // Check cache first
-        if (cache.has(id)) {
-            const { data, timestamp } = cache.get(id);
-            const isCacheValid = (Date.now() - timestamp) < CACHE_TTL;
-            if (isCacheValid) {
-                console.log('Returning cached data');
-                return res.json({ suggestion: data });
-            } else {
-                // Invalidate the cache if it's stale
-                cache.delete(id);
-            }
+    calculateSimilarityMatrix() {
+        const users = Object.keys(this.userTaskMatrix);
+        const similarityMatrix = {};
+
+        if (users.length < 2) {
+            console.log('Not enough users for similarity calculation.');
+            return similarityMatrix;
         }
 
-        // Fetch task from MongoDB
-        const task = await taskModel.findById(id);
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-
-        const userPrompt = req.body.userPrompt;
-        console.log('User Prompt:', userPrompt);
-
-        // Function to call OpenAI API with retry mechanism
-        const callOpenAI = async (retries = 3, delay = 1000) => {
-            try {
-                const response = await openai.chat.completions.create({
-                    model: "gpt-3.5-turbo",
-                    messages: [{ role: "user", content: userPrompt }],
-                    max_tokens: 100,
-                });
-                return response.data.choices[0].message.content;
-            } catch (error) {
-                if (error.response && error.response.status === 429 && retries > 0) {
-                    console.warn(`Rate limit exceeded. Retrying in ${delay}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return callOpenAI(retries - 1, delay * 2);
-                } else {
-                    throw error;
+        users.forEach(user1 => {
+            similarityMatrix[user1] = {};
+            users.forEach(user2 => {
+                if (user1 !== user2) {
+                    similarityMatrix[user1][user2] = this.cosineSimilarity(
+                        Object.values(this.userTaskMatrix[user1]),
+                        Object.values(this.userTaskMatrix[user2])
+                    );
                 }
-            }
-        };
+            });
+        });
 
-        const suggestion = await callOpenAI();
+        return similarityMatrix;
+    }
 
-        // Store the response in cache
-        cache.set(id, { data: suggestion, timestamp: Date.now() });
+    cosineSimilarity(vec1, vec2) {
+        const dotProduct = vec1.reduce((sum, val, i) => sum + (val * (vec2[i] || 0)), 0);
+        const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val * val), 0));
+        const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val * val), 0));
+        return (magnitude1 && magnitude2) ? (dotProduct / (magnitude1 * magnitude2)) : 0;
+    }
 
-        res.json({ suggestion });
-
-    } catch (error) {
-        console.error('Error calling OpenAI API:', error);
-
-        if (error.response) {
-            console.error('Error details:', error.response.data);
-            res.status(error.response.status).json({ error: error.response.data });
-        } else {
-            res.status(500).json({ error: 'Failed to suggest tasks. Please try again later.' });
+    recommend(userId, topN = 5) {
+        const userRatings = this.userTaskMatrix[userId];
+        if (!userRatings) {
+            console.log(`No ratings found for user ${userId}`);
+            return [];
         }
+
+        const recommendations = {};
+        const userSimilarities = this.similarityMatrix[userId] || {};
+
+        Object.keys(userSimilarities).forEach(otherUserId => {
+            const similarity = userSimilarities[otherUserId];
+            const otherUserRatings = this.userTaskMatrix[otherUserId];
+
+            Object.keys(otherUserRatings).forEach(task => {
+                if (!userRatings[task]) {
+                    if (!recommendations[task]) {
+                        recommendations[task] = 0;
+                    }
+                    recommendations[task] += similarity * otherUserRatings[task];
+                }
+            });
+        });
+
+        return Object.entries(recommendations)
+            .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+            .slice(0, topN)
+            .map(([task]) => task);
     }
 }
+
+
+
+//---// API Routes ---
+
+
+
+const updateSuggest = async (req, res) => {
+    try {
+        const todo = await taskModel.findById(req.params.id);
+        if (!todo) return res.status(404).json({ message: 'Task not found' });
+
+        // Predict priority based on current features
+        const features = [todo.timesAccessed, todo.completionTime, todo.frequency];
+        const priority = logisticModel.predict([features])[0];
+        todo.priority = reversePriorityMap[priority];
+
+        // Update task with request body data
+        Object.assign(todo, req.body);
+        await todo.save();
+
+        res.json(todo);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+const getSuggest = async (req, res) => {
+    try {
+        const todos = await taskModel.find({});
+        console.log('Todos:', todos);
+
+        if (todos.length === 0) {
+            return res.status(404).json({ message: 'No tasks found' });
+        }
+
+        const userTaskMatrix = {};
+        
+
+        todos.forEach(todo => {
+            const userId = todo.userId.toString(); // Convert ObjectId to string
+            if (!userTaskMatrix[userId]) {
+                userTaskMatrix[userId] = {};
+            }
+            userTaskMatrix[userId][todo.title] = todo.frequency;
+        });
+
+        console.log('User Task Matrix:', userTaskMatrix);
+
+        // Check for sufficient data
+        if (Object.keys(userTaskMatrix).length < 2) {
+            return res.status(404).json({ message: 'Not enough data for recommendations' });
+        }
+
+        const cf = new CollaborativeFiltering(userTaskMatrix);
+        const recommendations = cf.recommend(req.params.userId);
+
+        if (recommendations.length === 0) {
+            return res.status(404).json({ message: 'No recommendations found' });
+        }
+
+        res.json(recommendations);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+
+
+
+
 export default {
     addTask,
     getTask,
     update,
     deleteTask,
-    getSugestion
+    getSuggest,
+    updateSuggest,
 }

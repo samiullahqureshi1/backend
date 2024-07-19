@@ -5,5 +5,6 @@ taskRouter.post('/',tasks.addTask)
 taskRouter.get('/',tasks.getTask)
 taskRouter.put('/:id',tasks.update)
 taskRouter.delete('/:id',tasks.deleteTask)
-taskRouter.get('/:id',tasks.getSugestion)
+taskRouter.put('/update/:id',tasks.updateSuggest)
+taskRouter.get('/recommend/:userId',tasks.getSuggest)
 export default taskRouter;

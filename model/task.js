@@ -15,13 +15,24 @@ const taskSchema=new mongoose.Schema({
       },
       priority: {
         type: String,
-        enum: ['Low', 'Medium', 'High'],
-        default: 'Medium',
+        
       },
       completed: {
         type: Boolean,
         default: false,
-      }
+      },
+      lastAccessed:{
+        type:Date
+      },
+      timesAccessed:{
+        type:Number,
+        default:0
+      },
+      completionTime:
+       { type: Number },
+      frequency:
+       { type: Number, default: 0}, 
+
     },{
         timestamps:true
     });
