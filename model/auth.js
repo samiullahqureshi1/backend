@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-const userSchema=new mongoose.Schema({
-    name:{
+const authSchema=new mongoose.Schema({
+    userName:{
         type:String
     },
     email:{
@@ -9,6 +9,9 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String
     }
+},
+{
+    timestamps:true
 })
 
-export const userModel=mongoose.model('user',userSchema)
+export const authModel=mongoose.model('users',authSchema)

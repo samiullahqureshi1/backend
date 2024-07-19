@@ -1,15 +1,17 @@
-import dotenv from 'dotenv'
-import express from 'express';
-import authRouter from './Routes/router.js'
-import { dbConnection } from './db_connection.js';
-const app=express()
+import dotenv from "dotenv";
+import express from "express";
+import authRouter from "./Routes/router.js";
+import { dbConnection } from "./db_connection.js";
+const app = express();
 dotenv.config();
 dbConnection();
 
-    app.use(express.json());
-    app.use('/users',authRouter.SignUp)
-    app.use('/SignIn',authRouter.signin)
-    app.use('/events',authRouter.newEvent)
-app.listen(5000,()=>{
-    console.log('server properly connected')
-})
+app.use(express.json());
+app.use('/task',authRouter.task)
+app.use("/signUp", authRouter.signUp);
+app.use("/signIn", authRouter.signIn);
+
+
+app.listen(7000, () => {
+  console.log("server properly connected");
+});

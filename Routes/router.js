@@ -1,8 +1,8 @@
-import SignUp from './auth.js'
-import signin from './signIn.js'
-import newEvent from './event.js'
+import signUp from "./signUp.js";
+import signIn from './logIn.js'
+import task from "./task.js";
 export default {
-    SignUp,
-    signin,
-    newEvent,
+    signUp,
+    signIn,
+    task,
 }
