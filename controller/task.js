@@ -56,7 +56,7 @@ const deleteTask=(req,res)=>{
 }
 ///suggetion on user behaviour
 const openai=new OpenAI({
-    apiKey:'process.env.OPENAI_API_KEY'
+    apiKey:'api key'
 })
 const cache = new Map();
 
