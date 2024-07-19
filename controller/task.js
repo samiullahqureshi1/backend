@@ -56,7 +56,7 @@ const deleteTask=(req,res)=>{
 }
 ///suggetion on user behaviour
 const openai=new OpenAI({
-    apiKey:"sk-proj-HH3FPMnCOBoqHGMLLzvPT3BlbkFJkQPFPCIwziPodDYCMuns"
+    apiKey:'process.env.OPENAI_API_KEY'
 })
 const cache = new Map();
 
