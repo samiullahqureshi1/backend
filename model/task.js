@@ -32,7 +32,9 @@ const taskSchema=new mongoose.Schema({
        { type: Number },
       frequency:
        { type: Number, default: 0}, 
-
+      tags:{
+        type:String
+      }
     },{
         timestamps:true
     });

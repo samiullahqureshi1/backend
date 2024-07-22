@@ -2,7 +2,7 @@ import { taskModel } from "../model/task.js";
 
 
 const addTask=(req,res)=>{
-    const {userId,title,description,dueDate,priority,completed,lastAccessed,timesAccessed,completionTime,frequency}=req.body
+    const {userId,title,description,dueDate,priority,completed,lastAccessed,timesAccessed,completionTime,frequency,tags}=req.body
     const newData=new taskModel({
         userId,
         title,
@@ -14,6 +14,7 @@ const addTask=(req,res)=>{
         timesAccessed,
         completionTime,
         frequency,
+        tags,
     })
     newData.save().then(result=>{
         if(result){
@@ -47,9 +48,9 @@ const update=(req,res)=>{
 }
 
 const deleteTask=(req,res)=>{
-    const {id}=req.params
-    const query={$set:req.body}
-    taskModel.findByIdAndDelete(id,query).then(result=>{
+    //const {id}=req.params
+  //  const query={$set:req.body}
+    taskModel.deleteMany().then(result=>{
         if(result){
             res.status(201).send({
                 message:'properly deleted',
@@ -129,11 +130,7 @@ class CollaborativeFiltering {
     }
 }
 
-
-
 //---// API Routes ---
-
-
 
 const updateSuggest = async (req, res) => {
     try {
@@ -195,8 +192,28 @@ const getSuggest = async (req, res) => {
     }
 };
 
+const getBooks=async(req,res)=>{
+    const {userId,tag}=req.query
+    try {
+        const userTasks = await taskModel.find({ userId, tags: tag });
 
+        // Fetch similar tasks from other users
+        const similarTasks = await taskModel.find({ tags: tag, userId: { $ne: userId } });
 
+        // Combine user tasks and similar tasks for recommendations
+        const recommendations = similarTasks.map(task => ({
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            priority: task.priority,
+            tags: task.tags
+        }));
+
+        res.json({ userTasks, recommendations });
+    } catch (error) {
+        res.status(500).send({message:error.message})
+    }    
+}
 
 
 export default {
@@ -206,4 +223,5 @@ export default {
     deleteTask,
     getSuggest,
     updateSuggest,
+    getBooks,
 }
