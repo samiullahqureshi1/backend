@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import { Server } from "socket.io";
+import path from "path";
 import http from 'http'
 import authRouter from "./Routes/router.js";
 import { dbConnection } from "./db_connection.js";
@@ -9,16 +10,21 @@ const server=http.createServer(app)
 dotenv.config();
 dbConnection();
 const io =new Server(server)
-app.use(express.static('public'));
+app.use(express.static(path.resolve('./public')));
 app.use(express.json());
 app.use('/task',authRouter.task)
 app.use("/signUp", authRouter.signUp);
 app.use("/signIn", authRouter.signIn);
-app.use('/chat',authRouter.chat)
-io.on('connection', (socket) => {
-  console.log('a user connected');
-  chatController.chatController(socket, io);
-});
+io.on("connection",(socket)=>{
+  socket.on('user-message',message=>{
+     io.emit('message',message)
+  })
+})
+
+
+app.get('/',(req,res)=>{
+  return res.sendFile('/public/index.html')
+})
 
 
 server.listen(7000, () => {
