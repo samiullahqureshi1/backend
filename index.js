@@ -15,6 +15,13 @@ app.use(express.json());
 app.use('/task',authRouter.task)
 app.use("/signUp", authRouter.signUp);
 app.use("/signIn", authRouter.signIn);
+app.use('/flavour',authRouter.flavour)
+app.use('/topping',authRouter.topping)
+app.use('/iceCream',authRouter.iceCream)
+app.use('/order',authRouter.order)
+app.use('/admin',authRouter.admin)
+
+//socket io connection
 io.on("connection",(socket)=>{
   socket.on('user-message',message=>{
      io.emit('message',message)
@@ -27,6 +34,6 @@ app.get('/',(req,res)=>{
 })
 
 
-server.listen(7000, () => {
+server.listen(8000, () => {
   console.log("server properly connected");
 });

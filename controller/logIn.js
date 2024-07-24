@@ -3,13 +3,13 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
 const createToken=(user,res)=>{
-    const {firstName,lastName,email,id}=user;
+    const {userName,email,id}=user;
     const payLoad={
         id:id,
-        firstName,lastName,email
+        userName,email
     }
     console.log(payLoad)
-    jwt.sign({payLoad},process.env.SECRET_KEY,{expiresIn:"1h"},(err,token)=>{
+    jwt.sign({payLoad},process.env.SECRET_KEY,{expiresIn:"167d"},(err,token)=>{
         if(err){
             res.status(404).send('unable to generate')
         }else{

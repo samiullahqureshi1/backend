@@ -2,7 +2,7 @@ import { authModel } from "../model/auth.js";
 import bcrypt from 'bcrypt'
 
 const signUp=async(req,res)=>{
-    const {userName,email,password}=req.body;
+    const {name,email,password}=req.body;
     const query={email}
     authModel.findOne(query).then((user)=>{
         if(user){
