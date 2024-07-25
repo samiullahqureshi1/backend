@@ -20,6 +20,7 @@ app.use('/topping',authRouter.topping)
 app.use('/iceCream',authRouter.iceCream)
 app.use('/order',authRouter.order)
 app.use('/admin',authRouter.admin)
+app.use('/event',authRouter.event)
 
 //socket io connection
 io.on("connection",(socket)=>{
@@ -37,3 +38,7 @@ app.get('/',(req,res)=>{
 server.listen(8000, () => {
   console.log("server properly connected");
 });
+//66a2365d902b617cfb061c6e
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlMb2FkIjp7ImlkIjoiNjZhMjM2NWQ5MDJiNjE3Y2ZiMDYxYzZlIiwiZW1haWwiOiJhemxhbjExMUBnbWFpbC5jb20ifSwiaWF0IjoxNzIxOTA2ODg0LCJleHAiOjE3MzYzMzU2ODR9.ZGKHMzGY0BpQNZPuNRwOu_MDquW4i3qmdZAR0hBZ4sA
+//"email":"azlan111@gmail.com",
+   //"password":"azlan1"

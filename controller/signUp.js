@@ -15,7 +15,7 @@ const signUp=async(req,res)=>{
         }else{
             bcrypt.hash(password,12).then(hashedpassword=>{
                 const  User=new authModel({
-                   userName,
+                   name,
                     email,
                     password:hashedpassword
                 })
