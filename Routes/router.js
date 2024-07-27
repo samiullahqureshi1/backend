@@ -7,6 +7,7 @@ import iceCream from './iceCream.js'
 import order from './order.js'
 import admin from './admin.js'
 import event from './event.js'
+import property from './property.js'
 export default {
     signUp,
     signIn,
@@ -16,5 +17,6 @@ export default {
     iceCream,
     order,
     admin,
-    event
+    event,
+    property,
 }
