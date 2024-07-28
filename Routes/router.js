@@ -8,6 +8,7 @@ import order from './order.js'
 import admin from './admin.js'
 import event from './event.js'
 import property from './property.js'
+import agent from './agent.js'
 export default {
     signUp,
     signIn,
@@ -19,4 +20,5 @@ export default {
     admin,
     event,
     property,
+    agent,
 }

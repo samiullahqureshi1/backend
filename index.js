@@ -22,6 +22,7 @@ app.use('/order',authRouter.order)
 app.use('/admin',authRouter.admin)
 app.use('/event',authRouter.event)
 app.use('/property',authRouter.property)
+app.use('/agent',authRouter.agent)
 
 //socket io connection
 io.on("connection",(socket)=>{
