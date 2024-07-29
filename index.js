@@ -23,6 +23,7 @@ app.use('/admin',authRouter.admin)
 app.use('/event',authRouter.event)
 app.use('/property',authRouter.property)
 app.use('/agent',authRouter.agent)
+app.use('/email',authRouter.email)
 
 //socket io connection
 io.on("connection",(socket)=>{
@@ -30,7 +31,7 @@ io.on("connection",(socket)=>{
      io.emit('message',message)
   })
 })
-
+  
 
 app.get('/',(req,res)=>{
   return res.sendFile('/public/index.html')

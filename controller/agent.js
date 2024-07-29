@@ -53,7 +53,7 @@ const findAgent=async(req,res)=>{
           console.error('Error fetching agents:', error);
           res.status(500).json({ error: 'Failed to fetch agents' });
         }
-      };
+};
 
 const deleteAgent =(req,res)=>{
     agentModel.deleteMany().then(result=>{
