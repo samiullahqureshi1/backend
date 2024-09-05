@@ -10,6 +10,7 @@ import event from './event.js'
 import property from './property.js'
 import agent from './agent.js'
 import email from './email.js'
+import student from './student.js'
 export default {
     signUp,
     signIn,
@@ -23,4 +24,5 @@ export default {
     property,
     agent,
     email,
+    student,
 }

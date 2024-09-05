@@ -2,7 +2,7 @@ import { propertyModel } from "../model/property.js";
 
 
 const addProperty=(req,res)=>{
-    const {title,price,description,city,district,type,userId,bed,bath,luxuryAmenities,rating}=req.body;
+    const {title,price,description,city,district,type,userId,bed,bath,luxuryAmenities,rating,comments}=req.body;
     const data=new propertyModel({
         title,
         price,
@@ -15,6 +15,7 @@ const addProperty=(req,res)=>{
         rating,
         city,
         district,
+        comments,
     })
     data.save().then(result=>{
         if(result){
@@ -148,34 +149,69 @@ const getprice= async (req,res) => {
   }
 };
 
-const getRating=async(req,res)=>{
+const getRating = async (req, res) => {
   const { rating } = req.query; // Use req.query for query parameters or req.params for route parameters
   
-  // Validate the type parameter
-  if (!['high','low'].includes(rating)) {
+  // Validate the rating parameter
+  if (!['high', 'low'].includes(rating)) {
     return res.status(400).json({ error: 'Invalid rating parameter' });
   }
 
   try {
-    // Fetch properties based on the type and populate the user information
-   const properties=await propertyModel.aggregate([
-    {
-      $match:{
-        rating:rating
+    // Fetch properties based on the rating and populate the user information
+    const properties = await propertyModel.aggregate([
+      {
+        $match: {
+          rating: rating
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $addFields: {
+          userName: '$user.name',
+          userEmail: '$user.email'
+        }
+      },
+      {
+        $project: {
+          user: 0, 
+                 }
+
+      },
+      {
+        $addFields: {
+          comments: {
+            $filter: {
+              input: "$comments",
+              as: "comment",
+              cond: { $ne: ["$$comment", ""] } 
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          comments: {
+            $map: {
+              input: "$comments",
+              as: "comment",
+              in: { $toUpper: "$$comment" } 
+            }
+          }
+        }
       }
-    },
-    {
-      $lookup:{
-        from:'users',
-        localField:'userId',
-        foreignField:'_id',
-        as:'user'
-      }
-    },
-    {
-      $unwind:'$user'
-    }
-   ])
+     
+    ]);
 
     if (properties.length > 0) {
       res.status(200).json(properties);
@@ -186,7 +222,8 @@ const getRating=async(req,res)=>{
     console.error('Error fetching properties:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
+
 
 const getNewest=async(req,res)=>{
   try {

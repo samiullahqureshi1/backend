@@ -21,7 +21,8 @@ const propertySchema=new mongoose.Schema({
     rating:{
         type:String,
         enum:['high','low']
-    }
+    },
+    comments:[String]
 })
 
 export const propertyModel=mongoose.model('properties',propertySchema)

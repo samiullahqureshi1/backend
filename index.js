@@ -24,6 +24,7 @@ app.use('/event',authRouter.event)
 app.use('/property',authRouter.property)
 app.use('/agent',authRouter.agent)
 app.use('/email',authRouter.email)
+app.use('/student',authRouter.student)
 
 //socket io connection
 io.on("connection",(socket)=>{
@@ -38,7 +39,7 @@ app.get('/',(req,res)=>{
 })
 
 
-server.listen(8000, () => {
+server.listen(7000, () => {
   console.log("server properly connected");
 });
 
